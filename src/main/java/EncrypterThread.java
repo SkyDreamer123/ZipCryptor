@@ -40,9 +40,12 @@ public class EncrypterThread extends Thread {
                 if (txtProgress != null) {
                     List<File> allFiles = getFiledInDirectory(file);
                     for (int i = 0; i < allFiles.size(); i++) {
+                        System.out.println("Add to zip " + allFiles.get(i).getName());
                         zipFile.addFile(allFiles.get(i), parameters);
-                        txtProgress.setText(String.format("Progress: %d", (int) (((i * 1.0) / allFiles.size()) * 100)));
+                        txtProgress.setText(String.format("Progress: %d%%", (int) (((i * 1.0) / allFiles.size()) * 100)));
                     }
+
+                    txtProgress.setText("Готово");
                 } else {
                     zipFile.addFolder(file, parameters);
                 }
