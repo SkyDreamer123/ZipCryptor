@@ -11,7 +11,7 @@ public class EncrypterThread extends Thread {
     private File file;
     private ZipParameters parameters;
 
-    private JTextField txtProgress;
+    private JLabel txtProgress;
 
     public EncrypterThread(GUIForm form) {
         this.form = form;
@@ -21,7 +21,7 @@ public class EncrypterThread extends Thread {
         this.file = file;
     }
 
-    public void setProgressText(JTextField txtProgress) {
+    public void setProgressText(JLabel txtProgress) {
         this.txtProgress = txtProgress;
     }
 
@@ -39,10 +39,17 @@ public class EncrypterThread extends Thread {
             if (file.isDirectory()) {
                 if (txtProgress != null) {
                     List<File> allFiles = getFiledInDirectory(file);
+                    int lastProgressValue = 0;
                     for (int i = 0; i < allFiles.size(); i++) {
-                        System.out.println("Add to zip " + allFiles.get(i).getName());
+                        //System.out.println("Add to zip " + allFiles.get(i).getName());
                         zipFile.addFile(allFiles.get(i), parameters);
-                        txtProgress.setText(String.format("Progress: %d%%", (int) (((i * 1.0) / allFiles.size()) * 100)));
+                        int newProgressValue = (int) (((i * 1.0) / allFiles.size()) * 100);
+                        if (newProgressValue > lastProgressValue) {
+                            txtProgress.setText(String.format("Progress: %d%%", newProgressValue));
+                            lastProgressValue = newProgressValue;
+                            txtProgress.updateUI();
+
+                        }
                     }
 
                     txtProgress.setText("Готово");

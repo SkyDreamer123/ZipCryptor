@@ -11,7 +11,7 @@ public class GUIForm
     private JTextField filePath;
     private JButton selectButton;
     private JButton actionButton;
-    private JTextField txtProgress;
+    private JLabel lblPro;
     private File selectedFile;
 
     private boolean encryptedFileSelected = false;
@@ -122,7 +122,7 @@ public class GUIForm
         EncrypterThread thread = new EncrypterThread(this);
         thread.setFile(selectedFile);
         thread.setPassword(password);
-        thread.setProgressText(txtProgress);
+        thread.setProgressText(lblPro);
         thread.start();
     }
 
