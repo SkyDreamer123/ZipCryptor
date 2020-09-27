@@ -1,4 +1,5 @@
 import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 
 import javax.swing.*;
@@ -36,35 +37,37 @@ public class EncrypterThread extends Thread {
         try {
             String archiveName = getArchiveName();
             ZipFile zipFile = new ZipFile(archiveName);
-            if (file.isDirectory()) {
-                if (txtProgress != null) {
-                    List<File> allFiles = getFiledInDirectory(file);
-                    int lastProgressValue = 0;
-                    for (int i = 0; i < allFiles.size(); i++) {
-                        //System.out.println("Add to zip " + allFiles.get(i).getName());
-                        zipFile.addFile(allFiles.get(i), parameters);
-                        int newProgressValue = (int) (((i * 1.0) / allFiles.size()) * 100);
-                        if (newProgressValue > lastProgressValue) {
-                            txtProgress.setText(String.format("Progress: %d%%", newProgressValue));
-                            lastProgressValue = newProgressValue;
-                            txtProgress.updateUI();
 
-                        }
-                    }
-
-                    txtProgress.setText("Готово");
-                } else {
-                    zipFile.addFolder(file, parameters);
-                }
-            }
-            //FIXME: добавлена возможнжость шифровать файлы
-            else {
+            if(file.isFile() || txtProgress == null)
+            {
                 zipFile.addFile(file, parameters);
+                return;
             }
+
+            encryptDirectory(zipFile);
+
         } catch (Exception ex) {
             form.showWarning(ex.getMessage());
         }
         onFinish();
+    }
+
+    private void encryptDirectory(ZipFile zipFile) throws ZipException
+    {
+        List<File> allFiles = getFiledInDirectory(file);
+        int lastProgressValue = 0;
+        for (int i = 0; i < allFiles.size(); i++) {
+            //System.out.println("Add to zip " + allFiles.get(i).getName());
+            zipFile.addFile(allFiles.get(i), parameters);
+            int newProgressValue = (int) (((i * 1.0) / allFiles.size()) * 100);
+            if (newProgressValue > lastProgressValue) {
+                txtProgress.setText(String.format("Progress: %d%%", newProgressValue));
+                lastProgressValue = newProgressValue;
+                txtProgress.updateUI();
+            }
+        }
+
+        txtProgress.setText("Готово");
     }
 
     private void onStart() {
